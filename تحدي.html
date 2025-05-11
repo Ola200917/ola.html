@@ -1,0 +1,236 @@
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>تحدي أسئلة الصحة العامة - أبطال أبو عليا للنظافة</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Cairo', sans-serif;
+      background-color: #f0f4f8;
+      overflow-x: hidden;
+    }
+
+    nav {
+      background: linear-gradient(135deg, #0ea5e9, #1d4ed8);
+      padding: 20px 0;
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      width: 100%;
+    }
+
+    nav a {
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+      font-size: 1.1rem;
+      transition: opacity 0.3s;
+    }
+
+    nav a:hover {
+      opacity: 0.8;
+    }
+
+    .hero {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: row-reverse;
+      padding: 60px 20px;
+      gap: 40px;
+      animation: fadeIn 2s ease-in-out forwards;
+      opacity: 0;
+    }
+
+    .hero img {
+      width: 220px;
+      height: auto;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    .hero h1 {
+      font-size: 2.7rem;
+      color: #0f172a;
+      margin: 0;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .quiz-section {
+      padding: 40px;
+      text-align: center;
+    }
+
+    .question {
+      font-size: 1.5rem;
+      margin: 20px 0;
+    }
+
+    .option {
+      background-color: #007aff;
+      color: white;
+      padding: 12px 20px;
+      margin: 10px;
+      cursor: pointer;
+      border-radius: 5px;
+      transition: background-color 0.3s;
+    }
+
+    .option:hover {
+      background-color: #005bb5;
+    }
+
+    .button {
+      background-color: #28a745;
+      color: white;
+      font-size: 1.2rem;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 30px;
+    }
+
+    .score {
+      font-size: 1.5rem;
+      margin-top: 20px;
+    }
+
+    .result {
+      font-size: 1.2rem;
+      margin-top: 10px;
+      color: #f44336;
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="index.html">الرئيسية</a>
+    <a href="health.html">الصحة</a>
+    <a href="cleanliness.htm">النظافة</a>
+    <a href="تحدي.html">تحدي الصحة</a>
+    <a href="قمل.HTML">القمل</a>
+    <a href="plAY.HTML">لعبة</a>
+    <a href="others.html">أخرى</a>
+  </nav>
+
+  <section class="hero">
+    <img src="شعار ابو عليا.jpg" >
+    <h1>تحدي أسئلة الصحة العامة</h1>
+  </section>
+
+  <div class="quiz-section">
+    <h2>هل أنت جاهز لاختبار معلوماتك الصحية؟</h2>
+    <p>الإجابة على الأسئلة ستساعدك في معرفة مدى اهتمامك بصحتك. دعونا نبدأ!</p>
+
+    <div id="questions-container"></div>
+
+    <button class="button" onclick="showResult()">إظهار النتيجة</button>
+
+    <div class="score" id="score">نقاطك: 0</div>
+    <div class="result" id="result"></div>
+  </div>
+
+  <script>
+    let score = 0;
+
+    // مصفوفة الأسئلة (تستطيع إضافة المزيد من الأسئلة هنا)
+    const questions = [
+      {
+        question: "كم عدد ساعات النوم التي يحتاجها الشخص البالغ يومياً؟",
+        options: ["8 ساعات", "6 ساعات", "4 ساعات", "10 ساعات"],
+        correctAnswer: "8 ساعات"
+      },
+      {
+        question: "هل شرب الماء الكافي مهم لصحة الجسم؟",
+        options: ["نعم", "لا"],
+        correctAnswer: "نعم"
+      },
+      {
+        question: "ما هي فائدة تناول الفواكه بشكل يومي؟",
+        options: ["تعزيز المناعة", "زيادة الوزن", "تقوية العظام", "جميع ما ذكر"],
+        correctAnswer: "تعزيز المناعة"
+      },
+      {
+        question: "كم عدد الوجبات الصحية التي يجب أن يتناولها الشخص يومياً؟",
+        options: ["3 وجبات", "4 وجبات", "2 وجبات", "5 وجبات"],
+        correctAnswer: "3 وجبات"
+      }
+      // يمكنك إضافة المزيد من الأسئلة هنا
+    ];
+
+    // دالة لعرض الأسئلة بشكل يومي (بناءً على التاريخ)
+    function loadQuestions() {
+      const date = new Date();
+      const day = date.getDate();  // نستخدم يوم الشهر لعرض الأسئلة المختلفة يومياً
+
+      // اختيار الأسئلة بناءً على تاريخ اليوم
+      let selectedQuestions = questions.slice(day % questions.length, (day % questions.length) + 3);  // اختر 3 أسئلة يومياً
+
+      let container = document.getElementById("questions-container");
+      container.innerHTML = ''; // مسح المحتوى القديم إذا كان موجوداً
+
+      // عرض الأسئلة بنفس التنسيق الأول
+      selectedQuestions.forEach((q, index) => {
+        let questionDiv = document.createElement("div");
+        questionDiv.classList.add("question");
+        questionDiv.innerHTML = `
+          <p>${index + 1}. ${q.question}</p>
+          <div class="option" onclick="checkAnswer('${q.correctAnswer}', this)">${q.options[0]}</div>
+          <div class="option" onclick="checkAnswer('${q.correctAnswer}', this)">${q.options[1]}</div>
+          <div class="option" onclick="checkAnswer('${q.correctAnswer}', this)">${q.options[2]}</div>
+          <div class="option" onclick="checkAnswer('${q.correctAnswer}', this)">${q.options[3]}</div>
+        `;
+        container.appendChild(questionDiv);
+      });
+    }
+
+    // التحقق من الإجابة
+    function checkAnswer(correctAnswer, option) {
+      if (option.innerText === correctAnswer) {
+        score++;
+        option.style.backgroundColor = "#4CAF50"; // الأخضر للإجابة الصحيحة
+      } else {
+        option.style.backgroundColor = "#F44336"; // الأحمر للإجابة الخاطئة
+      }
+
+      // تحديث النقاط
+      document.getElementById('score').innerText = 'نقاطك: ' + score;
+    }
+
+    // عرض النتيجة النهائية
+    function showResult() {
+      let resultText = '';
+      if (score === 3) {
+        resultText = 'رائع! لقد أجبت على جميع الأسئلة بشكل صحيح.';
+      } else if (score === 2) {
+        resultText = 'جيد، لكن يمكنك تحسين معرفتك أكثر.';
+      } else {
+        resultText = 'حاول مرة أخرى! تعلم المزيد عن الصحة العامة.';
+      }
+      document.getElementById('result').innerText = resultText;
+    }
+
+    // تحميل الأسئلة عند فتح الصفحة
+    loadQuestions();
+  </script>
+
+</body>
+</html>
+
